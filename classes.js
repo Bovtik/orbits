@@ -46,8 +46,8 @@ class Circle {
     this.size = props.size || 0;
     
     this.color = new Color(props.color)
+    this.neighbors = []
   }
-
   draw(ctx) {
     ctx.lineWidth = 0.01;
     ctx.strokeStyle = '#000';
@@ -72,6 +72,7 @@ class Worm {
     });
 
     this.orbit = props.orbit;
+    this.pastOrbits = []
     
     this.clockwise = props.clockwise;
   }

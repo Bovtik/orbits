@@ -29,7 +29,7 @@ function dist(a, b) {
 
 //  Poisson sampler
 function poissonDiscSampler(width, height, radius) {
-  var k = 30, // maximum number of samples before rejection
+  var k = 200, // maximum number of samples before rejection
     radius2 = radius * radius,
     R = 3 * radius2,
     cellSize = radius * Math.SQRT1_2,
