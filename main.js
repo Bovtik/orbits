@@ -87,15 +87,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // circle.size = 15;
   })
 
-  // circles.forEach( circle => circle.draw(ctx) );
+  circles.forEach( circle => circle.draw(ctx) );
 
   let worms = [];
 
   let bottomCircles = circles
     .filter( circle => {
       return (
+        dist(circle, { x: circle.x, y: 0 }) < circle.size ||
         dist(circle, { x: circle.x, y: canvas.height }) < circle.size ||
-        dist(circle, { x: circle.x, y: 0 }) < circle.size
+        dist(circle, { x: 0, y: circle.y }) < circle.size ||
+        dist(circle, { x: canvas.width, y: circle.y }) < circle.size
       )
     })
     .map( circle => {
@@ -109,30 +111,30 @@ document.addEventListener('DOMContentLoaded', () => {
         k = -1;
       }
 
-      let x = 0;
-      let worm = null;
+      let wx = 0, wy = 0;
 
       if (dist(circle, { x: circle.x, y: canvas.height }) < circle.size) {
-        x = k * Math.pow(r * r - Math.pow(circle.y - canvas.height, 2), 0.5);
-        worm = new Worm({
-          x: circle.x + x,
-          y: canvas.height,
-          orbit: circle,
-          clockwise: clockwise
-        })
+        wx = k * Math.pow(r * r - Math.pow(circle.y - canvas.height, 2), 0.5) + circle.x;
+        wy = canvas.height;
       } else if (dist(circle, { x: circle.x, y: 0 }) < circle.size) {
-        x = -1 * k * Math.pow(r * r - Math.pow(circle.y, 2), 0.5);
-        worm = new Worm({
-          x: circle.x + x,
-          y: 0,
-          orbit: circle,
-          clockwise: clockwise
-        })
+        wx = -1 * k * Math.pow(r * r - Math.pow(circle.y, 2), 0.5) + circle.x;
+        wy = 0;
+      } else if (dist(circle, { x: 0, y: circle.y }) < circle.size) {
+        wx = 0;
+        wy = k * Math.pow(r * r - Math.pow(circle.x, 2), 0.5) + circle.y;
+      } else if (dist(circle, { x: canvas.width, y: circle.y }) < circle.size) {
+        wx = canvas.width;
+        wy = -1 * k * Math.pow(r * r - Math.pow(circle.x - canvas.width, 2), 0.5) + circle.y;
       } else {
         return false
       }
 
-      
+      let worm = new Worm({
+        x: wx,
+        y: wy,
+        orbit: circle,
+        clockwise: clockwise
+      })
 
       worms.push(worm);
 
