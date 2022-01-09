@@ -58,3 +58,71 @@ class Circle {
     // drawCircle(this.x, this.y, 1, ctx);
   }
 }
+class Worm {
+  constructor(props) {
+    this.width = props.width || 1;
+
+    this.color = new Color(props.color)
+
+    this.points = [];
+    this.points.push({
+      x: props.x,
+      y: props.y,
+      color: this.color
+    });
+
+    this.orbit = props.orbit;
+    
+    this.clockwise = props.clockwise;
+  }
+  setOrbit(orbit) {
+    this.orbit = orbit;
+  }
+  step() {
+    let lp = this.points[this.points.length - 1];
+
+    let dv = {
+      x: lp.x - this.orbit.x,
+      y: lp.y - this.orbit.y,
+    }
+    let len = dist(dv);
+
+    let a = Math.atan2(dv.y, dv.x);
+
+    
+    // let step = 100 * (Math.PI / 64) / Math.pow(len, .5);
+    let step = 5;
+    let astep = 2 * Math.asin(step / (2 * len) );
+
+    if (!this.clockwise) {
+      astep *= -1;
+    }
+    // let step = Math.PI / 64;
+
+    a += astep;
+
+    let newx = Math.cos(a) * len;
+    let newy = Math.sin(a) * len;
+    let newPoint = {
+      x: newx + this.orbit.x,
+      y: newy + this.orbit.y,
+      color: this.color
+    };
+
+    this.points.push(newPoint)
+  }
+  draw(ctx) {
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = this.color.toString();
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+
+    ctx.moveTo(this.points[0].x, this.points[0].y);
+
+    this.points.forEach( item => {
+      ctx.lineTo(item.x, item.y);
+    })
+
+    ctx.stroke();
+  }
+}

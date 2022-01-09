@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', () => {
   //  consts 
   const margin = 20;
@@ -23,26 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
     oldX = null;
     oldY = null;
   }
-  canvas.addEventListener('click', (e) => {
-    let mx = e.offsetX;
-    let my = e.offsetY;
-
-    let c = new Circle({
-      x: mx,
-      y: my,
-      size: 100
-    });
-
-    c.draw(ctx);
-  })
+  
 
   let amount = 100;
   let circles = [];
 
-  let pp = poissonDiscSampler(canvas.width, canvas.height, 100);
-  for (let i = 0; i < 100; i++) {
+  let pp = poissonDiscSampler(canvas.width, canvas.height, 100 + margin);
+  for (let i = 0; i < amount; i++) {
     let ppp = pp();
-    console.log(ppp)
 
     if (!ppp) continue;
 
@@ -61,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 0)
 
     let mk = mass / (canvas.width * canvas.height);
-    console.log(mass, mk)
     if (mk > 0.25) break;
   }
   
@@ -75,9 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   circles.forEach( (circle, i, arr) => {
-    // let closest = arr[0];
-    console.log(dist(arr[0], arr[2]))
-
     let closest = arr.reduce( (accum, item) => {
       if (circle != item && dist(circle, item) - item.size < dist(circle, accum) - accum.size) {
         accum = item;
@@ -86,55 +68,163 @@ document.addEventListener('DOMContentLoaded', () => {
       return accum;
     }, arr[(i + 1) % arr.length])
 
-    console.log(closest)
-
     circle.size = dist(circle, closest) - margin - closest.size;
 
     if (closest.size == 0) {
       circle.size *= Math.random();
     }
 
-    ctx.lineWidth = 5;
-    circle.color.a = 0.5;
-    ctx.strokeStyle = circle.color.toString();
-    ctx.beginPath();
-    ctx.moveTo(circle.x, circle.y);
-    ctx.lineTo(closest.x, closest.y);
-    ctx.stroke();
+    circle.closest = closest;
+
+    // ctx.lineWidth = 5;
+    // circle.color.a = 0.5;
+    // ctx.strokeStyle = circle.color.toString();
+    // ctx.beginPath();
+    // ctx.moveTo(circle.x, circle.y);
+    // ctx.lineTo(closest.x, closest.y);
+    // ctx.stroke();
 
     // circle.size = 15;
   })
 
-  circles.forEach( circle => circle.draw(ctx) );
+  // circles.forEach( circle => circle.draw(ctx) );
 
-  canvas.addEventListener('mousedown', (e) => {
-    mouseDown = true;
+  let worms = [];
+
+  let bottomCircles = circles
+    .filter( circle => {
+      return (
+        dist(circle, { x: circle.x, y: canvas.height }) < circle.size ||
+        dist(circle, { x: circle.x, y: 0 }) < circle.size
+      )
+    })
+    .map( circle => {
+      let clockwise = false;
+      let r = circle.size + margin / 2;
+      let k = 1;
+
+
+      if (Math.random() > 0.5) {
+        clockwise = true;
+        k = -1;
+      }
+
+      let x = 0;
+      let worm = null;
+
+      if (dist(circle, { x: circle.x, y: canvas.height }) < circle.size) {
+        x = k * Math.pow(r * r - Math.pow(circle.y - canvas.height, 2), 0.5);
+        worm = new Worm({
+          x: circle.x + x,
+          y: canvas.height,
+          orbit: circle,
+          clockwise: clockwise
+        })
+      } else if (dist(circle, { x: circle.x, y: 0 }) < circle.size) {
+        x = -1 * k * Math.pow(r * r - Math.pow(circle.y, 2), 0.5);
+        worm = new Worm({
+          x: circle.x + x,
+          y: 0,
+          orbit: circle,
+          clockwise: clockwise
+        })
+      } else {
+        return false
+      }
+
+      
+
+      worms.push(worm);
+
+      return circle;
+    });
+  
+  let interval = setInterval(() => {
+    worms.forEach(worm => {
+      worm.step();
+
+      worm.draw(ctx);
+
+      let lp = worm.points[worm.points.length - 1];
+
+      let dv = {
+        x: lp.x - worm.orbit.x,
+        y: lp.y - worm.orbit.y,
+      }
+      let a = Math.atan2(dv.y, dv.x);
+
+      let dv2 = {
+        x: lp.x - worm.orbit.closest.x,
+        y: lp.y - worm.orbit.closest.y,
+      }
+      let b = Math.atan2(dv2.y, dv2.x);
+      
+      // if (Math.abs(a + b) < 0.01) {
+      if ( (dist(dv) + dist(dv2) - (worm.orbit.size + worm.orbit.closest.size + margin)) < 0.1 ) {
+        console.log(worm.orbit.closest)
+        worm.orbit = worm.orbit.closest;
+        worm.clockwise = !worm.clockwise;
+      }
+    })
+  }, 1000/60);
+  
+
+  console.log(bottomCircles)
+
+  function clickHandler(e) {
+    let mx = e.offsetX;
+    let my = e.offsetY;
+    let csz = 100;
+
+    let c = new Circle({
+      x: mx,
+      y: my,
+      size: csz
+    });
+
+    c.draw(ctx);
+
+    let r = csz + margin / 2;
+
+    let x = -1 * Math.pow(r * r - Math.pow(my - canvas.height, 2), 0.5);
+
+    let worm = new Worm({
+      x: mx + x,
+      y: canvas.height,
+      orbit: c
+    })
+
+    // worm.step();
+    // worm.step();
+    // worm.step();
+    // worm.step();
+    // worm.step();
+    // worm.step();
+    // worm.step();
+    // worm.step();
+
+    worm.draw(ctx);
+
+    console.log(c, worm)
+
+    setInterval(() => {
+      worm.step();
+      worm.draw(ctx)
+    }, 1000 / 60);
+  }
+
+  let tgl = false;
+
+  canvas.addEventListener('click', e => {
+    // clickHandler(e);
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    if (tgl) {
+      circles.forEach(circle => circle.draw(ctx));
+    }
+
+    tgl = !tgl;
   })
-  canvas.addEventListener('mouseup', mouseoutHandler)
-  canvas.addEventListener('mouseout', mouseoutHandler)
-
-
-  // canvas.addEventListener('mousemove', (e) => {
-  //   if (!mouseDown) return;
-
-  //   let mx = e.offsetX;
-  //   let my = e.offsetY;
-
-  //   if (oldX === null) {
-  //     oldX = mx;
-  //   }
-  //   if (oldY === null) {
-  //     oldY = my;
-  //   }
-
-  //   ctx.beginPath();
-  //   ctx.moveTo(oldX, oldY);
-  //   ctx.lineTo(mx, my);
-  //   ctx.closePath();
-  //   ctx.stroke();
-
-  //   oldX = mx;
-  //   oldY = my;
-  // })
 })
 
