@@ -94,18 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
       return inc != circle && (dist(circle, inc) - circle.size - inc.size - margin < 0.1);
     })
 
-    circle.neighbors.forEach( nei => {
-      ctx.lineWidth = circle.size * 0.1;
-      // circle.color.a = 0.5;
-      ctx.strokeStyle = circle.color.toString();
-      ctx.beginPath();
-      ctx.moveTo(circle.x, circle.y);
-      ctx.lineTo(nei.x, nei.y);
-      ctx.stroke();
-    })
+    // circle.neighbors.forEach( nei => {
+    //   ctx.lineWidth = circle.size * 0.1;
+    //   // circle.color.a = 0.5;
+    //   ctx.strokeStyle = circle.color.toString();
+    //   ctx.beginPath();
+    //   ctx.moveTo(circle.x, circle.y);
+    //   ctx.lineTo(nei.x, nei.y);
+    //   ctx.stroke();
+    // })
 
     console.log(circle.neighbors)
   });
+
   circles.forEach(circle => circle.draw(ctx));
 
   let worms = [];
@@ -184,10 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // console.log(variants);
       
       variants.forEach( variant => {
-        // if (worm.pastOrbits.includes(variant)) {
-        //   // console.log(worm.pastOrbits, 'INCLUDES', variant)
-        //   return;
-        // }
+        if (worm.pastOrbits.includes(variant)) {
+          // console.log(worm.pastOrbits, 'INCLUDES', variant)
+          return;
+        }
         let dv2 = {
           x: lp.x - variant.x,
           y: lp.y - variant.y,
