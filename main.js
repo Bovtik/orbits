@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.width = canvas.offsetWidth;
   canvas.height = canvas.offsetHeight;
 
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+
 
   ctx.strokeStyle = "#f22";
   ctx.lineWidth = 2;
@@ -107,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(circle.neighbors)
   });
 
-  circles.forEach(circle => circle.draw(ctx));
+  // circles.forEach(circle => circle.draw(ctx));
 
   let worms = [];
 
@@ -168,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     worms.forEach(worm => {
       worm.step();
       worm.draw(ctx);
+      worm.drawLine(ctx);
 
       let lp = worm.points[worm.points.length - 1];
 
@@ -197,7 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Math.abs((dist(dv) + dist(dv2) - (worm.orbit.size + variant.size + margin))) < 0.1) {
         // if (Math.abs(Math.atan2(dv.y, dv.x) + Math.atan2(dv2.y, dv2.x)) < 0.1) {
           console.log(Math.abs(Math.atan2(dv.y, dv.x) + Math.atan2(dv2.y, dv2.x)))
-          worm.orbit = variant;
+          // worm.orbit = variant;
+          worm.setOrbit(variant);
           worm.clockwise = !worm.clockwise;
           worm.pastOrbits.push(variant);
         }

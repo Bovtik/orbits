@@ -72,14 +72,19 @@ class Worm {
     });
 
     this.orbit = props.orbit;
+    this.energy = 0;
     this.pastOrbits = []
     
     this.clockwise = props.clockwise;
+
+    this.dead = false;
   }
   setOrbit(orbit) {
     this.orbit = orbit;
+    this.energy = 0;
   }
   step() {
+    if (this.dead) return;
     let lp = this.points[this.points.length - 1];
 
     let dv = {
@@ -94,6 +99,10 @@ class Worm {
     // let step = 100 * (Math.PI / 64) / Math.pow(len, .5);
     let step = 5;
     let astep = 2 * Math.asin(step / (2 * len) );
+
+    this.energy += astep / (Math.PI * 2);
+
+    if (this.energy > 1) this.energy = 1;
 
     if (!this.clockwise) {
       astep *= -1;
@@ -110,10 +119,14 @@ class Worm {
       color: this.color
     };
 
+    if (this.energy >= 1) {
+      this.dead = true;
+      return;
+    }
     this.points.push(newPoint)
   }
   draw(ctx) {
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 1;
     ctx.strokeStyle = this.color.toString();
     ctx.lineCap = 'round';
     ctx.beginPath();
@@ -124,6 +137,30 @@ class Worm {
       ctx.lineTo(item.x, item.y);
     })
 
+    ctx.stroke();
+
+    // this.drawLine(ctx)
+  }
+  drawLine(ctx) {
+    let lp = this.points[this.points.length - 1];
+
+    ctx.lineWidth = 3 * this.energy;
+    let len = this.energy;
+
+    let grad = ctx.createLinearGradient(lp.x, lp.y, this.orbit.x, this.orbit.y);
+
+    let acol = new Color(this.color);
+    acol.a = 0;
+
+    grad.addColorStop(0, acol.toString())
+    grad.addColorStop(0.2 * len, this.color.toString())
+    grad.addColorStop(0.8 * len, this.orbit.color.toString())
+    grad.addColorStop(0.81 * len, '#00000000');
+
+    ctx.strokeStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(lp.x, lp.y);
+    ctx.lineTo(this.orbit.x, this.orbit.y);
     ctx.stroke();
   }
 }
