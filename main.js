@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let canvas = document.getElementById('main');
   let ctx = canvas.getContext('2d');
   // ctx.translate(0.5, 0.5);
-  let amount = 1000;
+  let amount = Math.floor(95 * Math.random()) + 5;
   let circles = [];
 
   canvas.width = canvas.offsetWidth;
@@ -155,12 +155,40 @@ document.addEventListener('DOMContentLoaded', () => {
     worms.push(worm);
   });
 
+  //  Add worm for circle closest to center
+  let centerCircle = circles[0];
+  let center = {
+    x: canvas.width / 2,
+    y: canvas.height / 2
+  };
+
+  circles.forEach( circle => {
+    if (dist(circle, center) < dist(centerCircle, center)) {
+      centerCircle = circle;
+    }
+  })
+
+  let angle = Math.random() * Math.PI * 2;
+
+  let wx = Math.cos(angle) * (centerCircle.size + margin / 2);
+  let wy = Math.sin(angle) * (centerCircle.size + margin / 2);
+
+  let centerWorm = new Worm({
+    x: wx + centerCircle.x,
+    y: wy + centerCircle.y,
+    orbit: centerCircle,
+    clockwise: (angle < Math.PI)
+  })
+
+  worms.push(centerWorm)
+
 
   //  Start
   // circles.forEach(circle => circle.draw(ctx));
 
   let interval = setInterval(() => {
     worms.forEach(worm => {
+      if (worm.dead) return;
       worm.step();
       worm.draw(ctx);
       worm.drawLine(ctx);

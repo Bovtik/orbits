@@ -97,12 +97,17 @@ class Worm {
 
     
     // let step = 100 * (Math.PI / 64) / Math.pow(len, .5);
-    let step = 5;
+    let step = 4;
     let astep = 2 * Math.asin(step / (2 * len) );
 
     this.energy += astep / (Math.PI * 2);
 
     if (this.energy > 1) this.energy = 1;
+    
+    if (this.energy >= 1.00) {
+      this.dead = true;
+      return;
+    }
 
     if (!this.clockwise) {
       astep *= -1;
@@ -119,14 +124,11 @@ class Worm {
       color: this.color
     };
 
-    if (this.energy >= 1) {
-      this.dead = true;
-      return;
-    }
+    
     this.points.push(newPoint)
   }
   draw(ctx) {
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 0.5 * this.energy;
     ctx.strokeStyle = this.color.toString();
     ctx.lineCap = 'round';
     ctx.beginPath();
@@ -144,8 +146,9 @@ class Worm {
   drawLine(ctx) {
     let lp = this.points[this.points.length - 1];
 
-    ctx.lineWidth = 3 * this.energy;
-    let len = this.energy;
+    ctx.lineWidth = 2 * this.energy;
+    // ctx.lineWidth = 1;
+    let len = this.energy * 0.75;
 
     let grad = ctx.createLinearGradient(lp.x, lp.y, this.orbit.x, this.orbit.y);
 
