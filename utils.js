@@ -38,6 +38,7 @@ function poissonDiscSampler(width, height, radius) {
     grid = new Array(gridWidth * gridHeight),
     queue = [],
     queueSize = 0,
+    // epsilon = 0.0000001,
     sampleSize = 0;
 
   return function () {
@@ -51,7 +52,9 @@ function poissonDiscSampler(width, height, radius) {
       // Make a new candidate between [radius, 2 * radius] from the existing sample.
       for (var j = 0; j < k; ++j) {
         var a = 2 * Math.PI * Math.random(),
-          r = Math.sqrt(Math.random() * R + radius2),
+          // r = Math.sqrt(Math.random() * R + radius2),
+          r = Math.random() * radius + radius,
+          // r = radius + epsilon,
           x = s[0] + r * Math.cos(a),
           y = s[1] + r * Math.sin(a);
 
@@ -99,3 +102,62 @@ function poissonDiscSampler(width, height, radius) {
 }
 
 
+//  Mitchells best-candidate
+function MitchellsSampler(width, height, maxRadius, minRadius) {
+  let baseCandidates = 20,
+      samples = [];
+
+  return function () {
+    let n = baseCandidates * samples.length + 1;
+    let bestDistance = 0,
+        bestCandidate = null;
+
+    for (let i = 0; i < n; i++) {
+      let candidate = {
+        x: Math.random() * width,
+        y: Math.random() * height
+      };
+      // if (!bestCandidate) {
+      //   bestCandidate = candidate;
+      // }
+
+      if (!samples.length) {
+        samples.push(candidate);
+        return candidate;
+      }
+
+      let d = width + height;
+
+      // samples.forEach( sample => {
+      //   let ds = dist(sample, candidate);
+
+      //   if (ds < d) {
+      //     d = ds;
+      //   }
+      // })\
+      for (let j = 0; j < samples.length; j++) {
+        let ds = dist(samples[j], candidate);
+
+        if (ds < d) {
+          d = ds;
+        }
+      }
+
+      if (d > bestDistance && d > minRadius && d > maxRadius) {
+        bestDistance = d;
+        bestCandidate = candidate;
+        bestCandidate.d = bestDistance;
+
+        // console.log(bestCandidate)
+      }
+    }
+
+    if (bestCandidate == null) {
+      return null;
+    }
+    
+    samples.push(bestCandidate);
+    
+    return bestCandidate;
+  }
+}

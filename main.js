@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let canvas = document.getElementById('main');
   let ctx = canvas.getContext('2d');
-
-  let amount = 100;
+  // ctx.translate(0.5, 0.5);
+  let amount = 1000;
   let circles = [];
 
   canvas.width = canvas.offsetWidth;
@@ -17,26 +17,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //  Init
 
-  let pp = poissonDiscSampler(canvas.width, canvas.height, 100 + margin);
+  // let pp = poissonDiscSampler(canvas.width, canvas.height, 100 + margin);
+  let pp = MitchellsSampler(canvas.width, canvas.height, 100, 100);
+  // let mass = 0;
   for (let i = 0; i < amount; i++) {
     let ppp = pp();
 
     if (!ppp) continue;
 
     let cc = new Circle({
-      x: ppp[0],
-      y: ppp[1]
+      x: ppp.x,
+      y: ppp.y,
+      // size: 10
+      // size: ppp.d
     });
 
     circles.push(cc)
-
-    let mass = circles.reduce( (accum, item) => {
-      return accum = accum + (item.size * item.size * Math.PI);
-    }, 0)
-
-    let mk = mass / (canvas.width * canvas.height);
-    if (mk > 0.85) break;
+    // cc.draw(ctx);
   }
+
+  console.log(circles);
 
   circles.forEach( (circle, i, arr) => {
     let closest = arr.reduce( (accum, item) => {
@@ -48,10 +48,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }, arr[(i + 1) % arr.length])
 
     circle.size = dist(circle, closest) - margin - closest.size;
+    // circle.size = 10;
 
     if (closest.size == 0) {
       circle.size *= Math.random();
+      // circle.noClosest = true;
     }
+
+    // circle.size = 10;
+    
+
+    circle.closest = closest;
+  })
+
+  //  Need second and third pass to inflate small circles
+  circles.forEach( (circle, i, arr) => {
+    let closest = arr.reduce((accum, item) => {
+      if (circle != item && dist(circle, item) - item.size < dist(circle, accum) - accum.size) {
+        accum = item;
+      }
+
+      return accum;
+    }, arr[(i + 1) % arr.length])
+
+    circle.size = dist(circle, closest) - margin - closest.size;
+
+    circle.closest = closest;
+  })
+  circles.forEach((circle, i, arr) => {
+    let closest = arr.reduce((accum, item) => {
+      if (circle != item && dist(circle, item) - item.size < dist(circle, accum) - accum.size) {
+        accum = item;
+      }
+
+      return accum;
+    }, arr[(i + 1) % arr.length])
+
+    circle.size = dist(circle, closest) - margin - closest.size;
+
+    // ctx.lineWidth = circle.size * 0.1;
+    // circle.color.a = 0.5;
+    // ctx.strokeStyle = circle.color.toString();
+    // ctx.beginPath();
+    // ctx.moveTo(circle.x, circle.y);
+    // ctx.lineTo(closest.x, closest.y);
+    // ctx.stroke();
 
     circle.closest = closest;
   })
@@ -116,13 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   //  Start
-  circles.forEach(circle => circle.draw(ctx));
+  // circles.forEach(circle => circle.draw(ctx));
 
   let interval = setInterval(() => {
     worms.forEach(worm => {
       worm.step();
       worm.draw(ctx);
-      // worm.drawLine(ctx);
+      worm.drawLine(ctx);
 
       let lp = worm.points[worm.points.length - 1];
 
@@ -155,7 +196,20 @@ document.addEventListener('DOMContentLoaded', () => {
   let tgl = false;
 
   canvas.addEventListener('click', e => {
-    console.log(worms);
+    // let ppp = pp();
+
+    // if (!ppp) return;
+
+    // let cc = new Circle({
+    //   x: ppp.x,
+    //   y: ppp.y,
+    //   size: 10
+    //   // size: ppp.d
+    // });
+
+    // circles.push(cc)
+    // cc.draw(ctx);
+    // console.log(worms);
     
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
