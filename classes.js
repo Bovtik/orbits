@@ -126,7 +126,7 @@ class Worm {
     this.points.push(newPoint)
   }
   draw(ctx) {
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 5;
     ctx.strokeStyle = this.color.toString();
     ctx.lineCap = 'round';
     ctx.beginPath();
