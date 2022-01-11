@@ -47,6 +47,8 @@ class Circle {
     
     this.color = new Color(props.color)
     this.neighbors = []
+
+    this.energy = 0;
   }
   draw(ctx) {
     ctx.lineWidth = 0.01;
@@ -105,10 +107,16 @@ class Worm {
     let astep = 2 * Math.asin(step / (2 * len) );
 
     this.energy += astep / (Math.PI * 2);
+    this.orbit.energy += astep / (Math.PI * 2);
 
     if (this.energy > 1) this.energy = 1;
     
     if (this.energy >= 1.00) {
+      this.dead = true;
+      return;
+    }
+
+    if (this.orbit.energy >= 1.20) {
       this.dead = true;
       return;
     }
