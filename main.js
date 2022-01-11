@@ -162,25 +162,32 @@ document.addEventListener('DOMContentLoaded', () => {
     y: canvas.height / 2
   };
 
+  let cr = canvas.width / 2;
+
   circles.forEach( circle => {
-    if (dist(circle, center) < dist(centerCircle, center)) {
+    // if (dist(circle, center) < dist(centerCircle, center)) {
+    //   centerCircle = circle;
+    // }
+    if (dist(circle, center) < cr) {
       centerCircle = circle;
+
+      let angle = Math.random() * Math.PI * 2;
+
+      let wx = Math.cos(angle) * (centerCircle.size + margin / 2);
+      let wy = Math.sin(angle) * (centerCircle.size + margin / 2);
+
+      let centerWorm = new Worm({
+        x: wx + centerCircle.x,
+        y: wy + centerCircle.y,
+        orbit: centerCircle,
+        clockwise: (angle < Math.PI)
+      })
+
+      worms.push(centerWorm)
     }
   })
 
-  let angle = Math.random() * Math.PI * 2;
-
-  let wx = Math.cos(angle) * (centerCircle.size + margin / 2);
-  let wy = Math.sin(angle) * (centerCircle.size + margin / 2);
-
-  let centerWorm = new Worm({
-    x: wx + centerCircle.x,
-    y: wy + centerCircle.y,
-    orbit: centerCircle,
-    clockwise: (angle < Math.PI)
-  })
-
-  worms.push(centerWorm)
+  
 
 
   //  Start
@@ -245,7 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // cc.draw(ctx);
     // console.log(worms);
     
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     if (tgl) {
       circles.forEach(circle => circle.draw(ctx));
