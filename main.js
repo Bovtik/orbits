@@ -217,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // if (Math.abs(Math.atan2(dv.y, dv.x) + Math.atan2(dv2.y, dv2.x)) < 0.1) {
           worm.setOrbit(variant);
           worm.clockwise = !worm.clockwise;
-          worm.pastOrbits.push(variant);
         }
       })
     })

@@ -71,9 +71,9 @@ class Worm {
       color: this.color
     });
 
-    this.orbit = props.orbit;
-    this.energy = 0;
     this.pastOrbits = []
+
+    this.setOrbit(props.orbit);
     
     this.clockwise = props.clockwise;
 
@@ -81,10 +81,14 @@ class Worm {
   }
   setOrbit(orbit) {
     this.orbit = orbit;
+    if (orbit) {
+      this.pastOrbits.push(orbit);
+    }
+
     this.energy = 0;
   }
   step() {
-    if (this.dead) return;
+    if (this.dead || !this.orbit) return;
     let lp = this.points[this.points.length - 1];
 
     let dv = {
