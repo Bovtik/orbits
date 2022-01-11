@@ -187,7 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // circles.forEach(circle => circle.draw(ctx));
 
   let interval = setInterval(() => {
+    let allDead = true;
     worms.forEach(worm => {
+      allDead = allDead && worm.dead;
       if (worm.dead) return;
       worm.step();
       worm.draw(ctx);
@@ -219,6 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       })
     })
+
+    if (allDead) {
+      console.log('FINISH')
+      clearInterval(interval);
+    }
   }, 1000/60);
 
   let tgl = false;
