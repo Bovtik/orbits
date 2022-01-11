@@ -97,7 +97,7 @@ class Worm {
 
     
     // let step = 100 * (Math.PI / 64) / Math.pow(len, .5);
-    let step = 4;
+    let step = 3;
     let astep = 2 * Math.asin(step / (2 * len) );
 
     this.energy += astep / (Math.PI * 2);
@@ -128,16 +128,20 @@ class Worm {
     this.points.push(newPoint)
   }
   draw(ctx) {
-    ctx.lineWidth = 0.5 * this.energy;
+    ctx.lineWidth = 3 * this.energy;
+    // ctx.lineWidth = 5;
     ctx.strokeStyle = this.color.toString();
     ctx.lineCap = 'round';
     ctx.beginPath();
 
-    ctx.moveTo(this.points[0].x, this.points[0].y);
+    // ctx.moveTo(this.points[0].x, this.points[0].y);
 
-    this.points.forEach( item => {
-      ctx.lineTo(item.x, item.y);
-    })
+    // this.points.forEach( item => {
+    //   ctx.lineTo(item.x, item.y);
+    // })
+
+    ctx.moveTo(this.points[this.points.length - 2].x, this.points[this.points.length - 2].y);
+    ctx.lineTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y);
 
     ctx.stroke();
 
