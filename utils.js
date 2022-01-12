@@ -17,6 +17,12 @@ const drawCircle = function drawCircle (x, y, radius, ctx) {
   ctx.fill();
 }
 
+const strokeCircle = function drawCircle(x, y, radius, ctx) {
+  ctx.beginPath();
+  ctx.ellipse(x, y, radius, radius, 0, 0, 2 * Math.PI);
+  ctx.stroke();
+}
+
 function dist(a, b) {
   if (!b) {
     b = {

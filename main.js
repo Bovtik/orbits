@@ -195,6 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let interval = setInterval(() => {
     let allDead = true;
+    circles.forEach(circle => circle.draw(ctx));
+
     worms.forEach(worm => {
       allDead = allDead && worm.dead;
       if (worm.dead) return;

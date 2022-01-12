@@ -49,15 +49,41 @@ class Circle {
     this.neighbors = []
 
     this.energy = 0;
+    this.worm = null;
   }
   draw(ctx) {
-    ctx.lineWidth = 0.01;
-    ctx.strokeStyle = '#000';
-    ctx.fillStyle = this.color.toString();
-    drawCircle(this.x, this.y, this.size, ctx);
-    ctx.fillStyle = '#000';
-    ctx.stroke();
+    // ctx.lineWidth = 0.01;
+    // ctx.strokeStyle = '#000';
+    // ctx.fillStyle = this.color.toString();
+    // drawCircle(this.x, this.y, this.size, ctx);
+    // ctx.fillStyle = '#000';
+    // ctx.stroke();
     // drawCircle(this.x, this.y, 1, ctx);
+
+
+    let r = (this.energy / MAX_ORBIT_ENERGY) * this.size;
+    let astep = 2 * Math.asin(WORM_STEP / (2 * this.size));
+    // console.log("ASTEP", astep, r)
+    ctx.lineWidth = astep;
+
+    let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+
+    grad.addColorStop(0, this.color.toString());
+
+    if (this.worm) {
+      let wormColor = new Color(this.worm.color);
+      // wormColor.a = r / this.size;
+      wormColor.a = this.worm.energy * 0.75;
+      grad.addColorStop(1, wormColor.toString());
+
+      ctx.shadowBlur = 1;
+      ctx.shadowColor = wormColor.toString();
+
+      ctx.lineWidth *= (1 - this.worm.energy) * 5;
+    }
+
+    ctx.strokeStyle = grad;
+    strokeCircle(this.x, this.y, r + astep, ctx);
   }
 }
 class Worm {
@@ -84,6 +110,7 @@ class Worm {
   setOrbit(orbit) {
     this.orbit = orbit;
     if (orbit) {
+      this.orbit.worm = this;
       this.pastOrbits.push(orbit);
     }
 
@@ -103,8 +130,7 @@ class Worm {
 
     
     // let step = 100 * (Math.PI / 64) / Math.pow(len, .5);
-    let step = 3;
-    let astep = 2 * Math.asin(step / (2 * len) );
+    let astep = 2 * Math.asin(WORM_STEP / (2 * len) );
 
     this.energy += astep / (Math.PI * 2);
     this.orbit.energy += astep / (Math.PI * 2);
@@ -116,7 +142,7 @@ class Worm {
       return;
     }
 
-    if (this.orbit.energy >= 1.20) {
+    if (this.orbit.energy >= MAX_ORBIT_ENERGY) {
       this.dead = true;
       return;
     }
@@ -164,7 +190,7 @@ class Worm {
 
     ctx.lineWidth = 2 * this.energy;
     // ctx.lineWidth = 1;
-    let len = this.energy * 0.75;
+    let len = this.energy * 0.5;
 
     let grad = ctx.createLinearGradient(lp.x, lp.y, this.orbit.x, this.orbit.y);
 
