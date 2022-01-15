@@ -169,6 +169,8 @@ class Worm {
     ctx.lineWidth = 3 * this.energy;
     // ctx.lineWidth = 5;
     ctx.strokeStyle = this.color.toString();
+    ctx.shadowColor = this.color.toString();
+    ctx.shadowBlur = 15;
     ctx.lineCap = 'round';
     ctx.beginPath();
 
@@ -184,6 +186,44 @@ class Worm {
     ctx.stroke();
 
     // this.drawLine(ctx)
+    //  orbit trails
+    let lp = this.points[this.points.length - 1];
+    this.pastOrbits.forEach(pastOrbit => {
+      let r = dist(lp, pastOrbit);
+      let k = 0.9 * this.energy / MAX_ORBIT_ENERGY;
+      // let k = this.energy * 0.99
+      let rr = r * k;
+      let g2 = ctx.createRadialGradient(pastOrbit.x, pastOrbit.y, 0, pastOrbit.x, pastOrbit.y, r);
+
+      g2.addColorStop(0, pastOrbit.color.toString());
+      g2.addColorStop(rr / r, this.color.toString());
+      // g2.addColorStop(1.01 * rr / r, '#00000000');
+
+      ctx.strokeStyle = g2;
+
+      let dd = {
+        x: lp.x - pastOrbit.x,
+        y: lp.y - pastOrbit.y
+      };
+
+      ctx.shadowColor = this.color.toString();
+      ctx.shadowBlur = 5;
+      let dda = Math.atan2(dd.y, dd.x);
+      // let dda = Math.abs(pastOrbit.energy - this.energy) * Math.PI * 2
+      ctx.beginPath();
+      // ctx.arc(pastOrbit.x, pastOrbit.y, pastOrbit.energy * pastOrbit.size, dda, dda + 0.5 * Math.abs(Math.sin(this.energy * Math.PI * 2)))
+      ctx.arc(pastOrbit.x, pastOrbit.y, pastOrbit.energy * rr, dda, dda + 0.1)
+      // ctx.moveTo(this.orbit.x, this.orbit.y);
+      // ctx.lineTo(lp.x, lp.y);
+      ctx.stroke();
+    })
+
+
+
+    //  point tails
+    this.pastOrbits.forEach( pastOrbit => {
+      // let angle = Math.atan()
+    })
   }
   drawLine(ctx) {
     let lp = this.points[this.points.length - 1];
@@ -203,9 +243,45 @@ class Worm {
     grad.addColorStop(0.81 * len, '#00000000');
 
     ctx.strokeStyle = grad;
+    ctx.shadowBlur = 5;
+
     ctx.beginPath();
     ctx.moveTo(lp.x, lp.y);
     ctx.lineTo(this.orbit.x, this.orbit.y);
     ctx.stroke();
+
+
+    
+
+    // this.pastOrbits.forEach(pastOrbit => {
+    //   let r = dist(lp, pastOrbit);
+    //   let k = 0.9 * this.energy/ MAX_ORBIT_ENERGY;
+    //   // let k = this.energy * 0.99
+    //   let rr = r * k;
+    //   let g2 = ctx.createRadialGradient(pastOrbit.x, pastOrbit.y, 0, pastOrbit.x, pastOrbit.y, r);
+
+    //   g2.addColorStop(0, pastOrbit.color.toString());
+    //   g2.addColorStop(rr / r, this.color.toString());
+    //   // g2.addColorStop(1.01 * rr / r, '#00000000');
+
+    //   ctx.strokeStyle = g2;
+
+    //   let dd = {
+    //     x: lp.x - pastOrbit.x,
+    //     y: lp.y - pastOrbit.y
+    //   };
+
+    //   ctx.shadowColor = this.color.toString();
+    //   ctx.shadowBlur = 5;
+    //   let dda = Math.atan2(dd.y, dd.x);
+    //   // let dda = Math.abs(pastOrbit.energy - this.energy) * Math.PI * 2
+    //   ctx.beginPath();
+    //   // ctx.arc(pastOrbit.x, pastOrbit.y, pastOrbit.energy * pastOrbit.size, dda, dda + 0.5 * Math.abs(Math.sin(this.energy * Math.PI * 2)))
+    //   ctx.arc(pastOrbit.x, pastOrbit.y, pastOrbit.energy * rr, dda, dda + 0.1)
+    //   // ctx.moveTo(this.orbit.x, this.orbit.y);
+    //   // ctx.lineTo(lp.x, lp.y);
+    //   ctx.stroke();
+    // })
+    
   }
 }
