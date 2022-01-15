@@ -17,9 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //  Init
 
-  // let pp = poissonDiscSampler(canvas.width, canvas.height, 100 + margin);
   let pp = MitchellsSampler(canvas.width, canvas.height, 100, 100);
-  // let mass = 0;
   for (let i = 0; i < amount; i++) {
     let ppp = pp();
 
@@ -28,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let cc = new Circle({
       x: ppp.x,
       y: ppp.y,
-      // size: 10
       // size: ppp.d
     });
 
