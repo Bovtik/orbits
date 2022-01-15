@@ -34,6 +34,26 @@ class Color {
       this.a = a
     }
   }
+  setRandomHSV() {
+    let h = 360 * Math.random();
+    // let sv = 2 * Math.random();
+    // let sk = Math.random();
+
+    let hsv = {
+      h,
+      // s: Math.pow(Math.random(), 0.5) * 100,
+      s: 100,
+      v: Math.pow(Math.random(), 1) * 100
+      // s: sv * sk * 100,
+      // v: sv * (1 - sk)
+    };
+
+    let rgb = hsvToRgb(hsv)
+
+    this.r = rgb.r;
+    this.g = rgb.g;
+    this.b = rgb.b;
+  }
   toString() {
     return `rgba(${this.r | 0}, ${this.g | 0}, ${this.b | 0}, ${this.a})`;
   }
@@ -90,7 +110,8 @@ class Worm {
   constructor(props) {
     this.width = props.width || 1;
 
-    this.color = new Color(props.color)
+    this.color = new Color(props.color);
+    this.color.setRandomHSV();
 
     this.points = [];
     this.points.push({
