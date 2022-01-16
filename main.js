@@ -200,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
       worm.step();
       worm.draw(ctx);
       worm.drawLine(ctx);
+      worm.drawOrbitTrails(ctx);
 
       let lp = worm.points[worm.points.length - 1];
 
