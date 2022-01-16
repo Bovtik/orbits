@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('FINISH')
       clearInterval(interval);
     }
-  }, 1000/60);
+  }, 1000 / FPS);
 
   let tgl = false;
 
