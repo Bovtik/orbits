@@ -127,6 +127,8 @@ class Worm {
     this.clockwise = props.clockwise;
 
     this.dead = false;
+
+    this.lastTrail = [];
   }
   setOrbit(orbit) {
     this.orbit = orbit;
@@ -228,34 +230,83 @@ class Worm {
   drawOrbitTrails(ctx) {
     let lp = this.points[this.points.length - 1];
 
-    this.pastOrbits.forEach(pastOrbit => {
+    this.pastOrbits.forEach( (pastOrbit, i) => {
       let r = dist(lp, pastOrbit);
-      let k = 0.9 * this.energy / MAX_ORBIT_ENERGY;
+      let k = pastOrbit.energy * this.energy / MAX_ORBIT_ENERGY;
       // let k = this.energy * 0.99
       let rr = r * k;
-      let g2 = ctx.createRadialGradient(pastOrbit.x, pastOrbit.y, 0, pastOrbit.x, pastOrbit.y, r);
 
-      g2.addColorStop(0, pastOrbit.color.toString());
-      g2.addColorStop(rr / r, this.color.toString());
+      let arcRad = 1 * rr;
+      if (arcRad > pastOrbit.size) arcRad = pastOrbit.size;
+      // arcRad -= 20;
+      if (arcRad < 0) arcRad = 0;
+
+      let g2 = ctx.createRadialGradient(pastOrbit.x, pastOrbit.y, 0, pastOrbit.x, pastOrbit.y, pastOrbit.size);
+
+      let or = this.lastTrail[i] ? this.lastTrail[i].r : 0;
+      // or *= 0.9
+      or -= 0.1;
+      if (or < 0) or = 0;
+
+
+      // g2.addColorStop(0, "#00000000");
+      // g2.addColorStop(or / (arcRad > 0 ? arcRad : pastOrbit.size), "#00000000");
+      // g2.addColorStop(1, this.color.toString());
+      // g2.addColorStop(arcRad / pastOrbit.size, "#00000000");
+      // g2.addColorStop(1, "#00000000");
+
+      // g2.addColorStop(0, pastOrbit.color.toString());
+      g2.addColorStop(0, this.color.toString());
       // g2.addColorStop(1.01 * rr / r, '#00000000');
 
-      ctx.strokeStyle = g2;
+      ctx.fillStyle = g2;
+      ctx.lineWidth = 0;
 
       let dd = {
         x: lp.x - pastOrbit.x,
         y: lp.y - pastOrbit.y
       };
+      
+      let shadowColor = new Color(this.color);
+      shadowColor.a = 0.2;
+      ctx.shadowColor = shadowColor.toString();
+      ctx.shadowBlur = 0;
 
-      ctx.shadowColor = this.color.toString();
-      ctx.shadowBlur = 5;
+      
+      
       let dda = Math.atan2(dd.y, dd.x);
-      // let dda = Math.abs(pastOrbit.energy - this.energy) * Math.PI * 2
+      let dda2 = this.lastTrail[i] ? this.lastTrail[i].angle : dda;
+
+      let ddd = Math.abs(or - arcRad) / pastOrbit.size;
+      if (ddd > 0.05) {
+        this.lastTrail[i] = {
+          r: arcRad,
+          angle: dda
+        }
+        return;
+      }
+      
+      let angleWidth = 0.1;
+      let angleOffset = angleWidth / 2;
+
       ctx.beginPath();
-      // ctx.arc(pastOrbit.x, pastOrbit.y, pastOrbit.energy * pastOrbit.size, dda, dda + 0.5 * Math.abs(Math.sin(this.energy * Math.PI * 2)))
-      ctx.arc(pastOrbit.x, pastOrbit.y, pastOrbit.energy * rr, dda, dda + 0.1)
-      // ctx.moveTo(this.orbit.x, this.orbit.y);
-      // ctx.lineTo(lp.x, lp.y);
-      ctx.stroke();
+
+      ctx.moveTo(pastOrbit.x + Math.cos(dda - angleOffset) * arcRad, pastOrbit.y + Math.sin(dda - angleOffset) * arcRad);
+      ctx.lineTo(pastOrbit.x + Math.cos(dda + angleOffset) * arcRad, pastOrbit.y + Math.sin(dda + angleOffset) * arcRad);
+
+      ctx.lineTo(pastOrbit.x + Math.cos(dda2 + angleOffset) * or, pastOrbit.y + Math.sin(dda2 + angleOffset) * or);
+      ctx.lineTo(pastOrbit.x + Math.cos(dda2 - angleOffset) * or, pastOrbit.y + Math.sin(dda2 - angleOffset) * or);
+      
+      ctx.closePath();
+      // ctx.arc(pastOrbit.x, pastOrbit.y, or, dda, dda + 0.1)
+      // ctx.arc(pastOrbit.x, pastOrbit.y, arcRad, dda, dda + 0.1)
+
+      ctx.fill();
+
+      this.lastTrail[i] = {
+        r: arcRad,
+        angle: dda
+      }
     })
   }
 }
