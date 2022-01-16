@@ -239,7 +239,9 @@ class Worm {
       let arcRad = 1 * rr;
       if (arcRad > pastOrbit.size) arcRad = pastOrbit.size;
       // arcRad -= 20;
-      if (arcRad < 0) arcRad = 0;
+      // if (arcRad < 0) arcRad = 0;
+
+      let radK = arcRad / pastOrbit.size;
 
       let g2 = ctx.createRadialGradient(pastOrbit.x, pastOrbit.y, 0, pastOrbit.x, pastOrbit.y, pastOrbit.size);
 
@@ -255,8 +257,8 @@ class Worm {
       // g2.addColorStop(arcRad / pastOrbit.size, "#00000000");
       // g2.addColorStop(1, "#00000000");
 
-      // g2.addColorStop(0, pastOrbit.color.toString());
       g2.addColorStop(0, this.color.toString());
+      g2.addColorStop(1, this.orbit.color.toString());
       // g2.addColorStop(1.01 * rr / r, '#00000000');
 
       ctx.fillStyle = g2;
@@ -275,6 +277,7 @@ class Worm {
       
       
       let dda = Math.atan2(dd.y, dd.x);
+      // let dda = this.lastTrail[i] ? this.lastTrail[i].angle : Math.atan2(dd.y, dd.x);
       let dda2 = this.lastTrail[i] ? this.lastTrail[i].angle : dda;
 
       let ddd = Math.abs(or - arcRad) / pastOrbit.size;
@@ -285,17 +288,20 @@ class Worm {
         }
         return;
       }
-      
-      let angleWidth = 0.1;
+
+      // let astep = 2 * Math.asin(20 / (2 * pastOrbit.size));
+      let astep = this.orbit.energy * pastOrbit.size * 0.003;
+      let angleWidth = astep * Math.sin(radK * Math.PI);
       let angleOffset = angleWidth / 2;
+      let oldOffset = this.lastTrail[i] ? this.lastTrail[i].offset : angleOffset;
 
       ctx.beginPath();
 
       ctx.moveTo(pastOrbit.x + Math.cos(dda - angleOffset) * arcRad, pastOrbit.y + Math.sin(dda - angleOffset) * arcRad);
       ctx.lineTo(pastOrbit.x + Math.cos(dda + angleOffset) * arcRad, pastOrbit.y + Math.sin(dda + angleOffset) * arcRad);
 
-      ctx.lineTo(pastOrbit.x + Math.cos(dda2 + angleOffset) * or, pastOrbit.y + Math.sin(dda2 + angleOffset) * or);
-      ctx.lineTo(pastOrbit.x + Math.cos(dda2 - angleOffset) * or, pastOrbit.y + Math.sin(dda2 - angleOffset) * or);
+      ctx.lineTo(pastOrbit.x + Math.cos(dda2 + oldOffset) * or, pastOrbit.y + Math.sin(dda2 + oldOffset) * or);
+      ctx.lineTo(pastOrbit.x + Math.cos(dda2 - oldOffset) * or, pastOrbit.y + Math.sin(dda2 - oldOffset) * or);
       
       ctx.closePath();
       // ctx.arc(pastOrbit.x, pastOrbit.y, or, dda, dda + 0.1)
@@ -305,7 +311,8 @@ class Worm {
 
       this.lastTrail[i] = {
         r: arcRad,
-        angle: dda
+        angle: dda,
+        offset: angleOffset
       }
     })
   }
