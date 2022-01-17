@@ -128,7 +128,10 @@ class Worm {
 
     this.dead = false;
 
-    this.lastTrail = [];
+    this.lastOrbitTrail = [];
+    this.lastTails = [];
+
+    this.cumulativeEnergy = 0;
   }
   setOrbit(orbit) {
     this.orbit = orbit;
@@ -156,12 +159,18 @@ class Worm {
     let astep = 2 * Math.asin(WORM_STEP / (2 * len) );
 
     this.energy += astep / (Math.PI * 2);
+    this.cumulativeEnergy += astep / (Math.PI * 2);
     this.orbit.energy += astep / (Math.PI * 2);
 
-    if (this.energy > 1) this.energy = 1;
-    
-    if (this.energy >= 1.00) {
+    if (this.energy > MAX_WORM_ENERGY) {
       this.dead = true;
+      this.energy = MAX_WORM_ENERGY;
+      return;
+    }
+
+    if (this.cumulativeEnergy >= MAX_CUMULATIVE) {
+      this.dead = true;
+      this.cumulativeEnergy = MAX_CUMULATIVE;
       return;
     }
 
@@ -245,7 +254,7 @@ class Worm {
 
       let g2 = ctx.createRadialGradient(pastOrbit.x, pastOrbit.y, 0, pastOrbit.x, pastOrbit.y, pastOrbit.size);
 
-      let or = this.lastTrail[i] ? this.lastTrail[i].r : 0;
+      let or = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].r : 0;
       // or *= 0.9
       or -= 0.1;
       if (or < 0) or = 0;
@@ -277,12 +286,12 @@ class Worm {
       
       
       let dda = Math.atan2(dd.y, dd.x);
-      // let dda = this.lastTrail[i] ? this.lastTrail[i].angle : Math.atan2(dd.y, dd.x);
-      let dda2 = this.lastTrail[i] ? this.lastTrail[i].angle : dda;
+      // let dda = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].angle : Math.atan2(dd.y, dd.x);
+      let dda2 = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].angle : dda;
 
       let ddd = Math.abs(or - arcRad) / pastOrbit.size;
       if (ddd > 0.05) {
-        this.lastTrail[i] = {
+        this.lastOrbitTrail[i] = {
           r: arcRad,
           angle: dda
         }
@@ -293,7 +302,7 @@ class Worm {
       let astep = this.orbit.energy * pastOrbit.size * 0.003;
       let angleWidth = astep * Math.sin(radK * Math.PI);
       let angleOffset = angleWidth / 2;
-      let oldOffset = this.lastTrail[i] ? this.lastTrail[i].offset : angleOffset;
+      let oldOffset = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].offset : angleOffset;
 
       ctx.beginPath();
 
@@ -309,11 +318,72 @@ class Worm {
 
       ctx.fill();
 
-      this.lastTrail[i] = {
+      this.lastOrbitTrail[i] = {
         r: arcRad,
         angle: dda,
         offset: angleOffset
       }
+    })
+  }
+
+  drawTrails(ctx) {
+    let lp = this.points[this.points.length - 1];
+
+
+    this.pastOrbits.forEach( (pastOrbit, i) => {
+      let dv = {
+        x: pastOrbit.x - lp.x,
+        y: pastOrbit.y - lp.y
+      };
+
+      let angle = Math.atan2(dv.y, dv.x);
+      angle -= (this.cumulativeEnergy / MAX_CUMULATIVE) * Math.PI * 17 + pastOrbit.energy * Math.PI * 2;
+      
+      // let r = dist(dv) - pastOrbit.size;
+      let r = 30;
+      let k = 1 - this.cumulativeEnergy / MAX_CUMULATIVE;
+      let kk = this.cumulativeEnergy / MAX_CUMULATIVE;
+      r *= Math.pow(kk - 1, 2);
+
+      let newPoint = {
+        x: lp.x + Math.cos(angle) * r,
+        y: lp.y + Math.sin(angle) * r
+      }
+
+      let oldPoint = this.lastTails[i] ? this.lastTails[i] : newPoint;
+
+      let g2 = ctx.createRadialGradient(lp.x, lp.y, 0, lp.x, lp.y, dist(dv));
+
+      // g2.addColorStop(0, "#00000000");
+      // g2.addColorStop(or / (arcRad > 0 ? arcRad : pastOrbit.size), "#00000000");
+      // g2.addColorStop(1, this.color.toString());
+      // g2.addColorStop(arcRad / pastOrbit.size, "#00000000");
+      // g2.addColorStop(1, "#00000000");
+      
+      let colorK = Math.pow(1 - k, 1.5) * pastOrbit.energy;
+      let poColor = new Color(pastOrbit.color);
+      poColor.a = colorK;
+      let color = new Color(this.color);
+      color.a = colorK;
+
+      g2.addColorStop(0, poColor.toString());
+      g2.addColorStop(1, color.toString());
+
+      ctx.lineWidth = this.cumulativeEnergy;
+      ctx.strokeStyle = g2;
+
+      ctx.shadowBlur = this.cumulativeEnergy;
+      ctx.shadowColor = g2;
+
+      ctx.beginPath();
+
+      ctx.moveTo(oldPoint.x, oldPoint.y);
+      ctx.lineTo(newPoint.x, newPoint.y);
+      // ctx.arc(lp.x, lp.y, 100, angle, angle + 0.3);
+
+      ctx.stroke();
+
+      this.lastTails[i] = newPoint;
     })
   }
 }

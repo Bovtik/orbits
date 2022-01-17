@@ -186,9 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   
 
-
   //  Start
-  // circles.forEach(circle => circle.draw(ctx));
+  circles.forEach(circle => circle.draw(ctx));
 
   let interval = setInterval(() => {
     let allDead = true;
@@ -199,8 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (worm.dead) return;
       worm.step();
       worm.draw(ctx);
-      worm.drawLine(ctx);
+      // worm.drawLine(ctx);
       worm.drawOrbitTrails(ctx);
+      worm.drawTrails(ctx);
 
       let lp = worm.points[worm.points.length - 1];
 
@@ -230,6 +230,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (allDead) {
       console.log('FINISH')
+      // let cum = worms.reduce( (accum, item) => accum += item.cumulativeEnergy, 0);
+      // cum /= worms.length;
+      // console.log(cum)
+
       clearInterval(interval);
     }
   }, 1000 / FPS);
