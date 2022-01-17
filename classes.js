@@ -300,7 +300,7 @@ class Worm {
       let dda2 = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].angle : dda;
 
       let ddd = Math.abs(or - arcRad) / pastOrbit.size;
-      if (ddd > 0.5) {
+      if (Math.abs(arcRad - or) > maxStep + 1) {
         this.lastOrbitTrail[i] = {
           r: arcRad,
           angle: dda
