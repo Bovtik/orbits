@@ -242,7 +242,7 @@ class Worm {
     grad.addColorStop(0.81 * len, '#00000000');
 
     ctx.strokeStyle = grad;
-    ctx.shadowBlur = 5;
+    ctx.shadowBlur = WORM_STEP * 0.5;
 
     ctx.beginPath();
     ctx.moveTo(lp.x, lp.y);
