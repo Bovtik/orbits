@@ -241,6 +241,7 @@ class Worm {
   }
 
   drawOrbitTrails(ctx) {
+    let maxStep = 3;
     let lp = this.points[this.points.length - 1];
 
     this.pastOrbits.forEach( (pastOrbit, i) => {
@@ -262,6 +263,8 @@ class Worm {
       // or *= 0.9
       or -= 0.1;
       if (or < 0) or = 0;
+
+      if (arcRad - or > maxStep) arcRad = or + maxStep;
 
 
       // g2.addColorStop(0, "#00000000");
