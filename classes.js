@@ -141,9 +141,9 @@ class Worm {
     }
 
     this.energy = 0;
+    this.petalEnergy = 0;
   }
   step() {
-    if (this.dead || !this.orbit) return;
     let lp = this.points[this.points.length - 1];
 
     let dv = {
@@ -154,19 +154,23 @@ class Worm {
 
     let a = Math.atan2(dv.y, dv.x);
 
+    let astep = 2 * Math.asin(WORM_STEP / (2 * len));
+    this.petalEnergy += astep;
+    if (this.dead || !this.orbit) return;
+    
+
     
     // let step = 100 * (Math.PI / 64) / Math.pow(len, .5);
-    let astep = 2 * Math.asin(WORM_STEP / (2 * len) );
 
     this.energy += astep / (Math.PI * 2);
     this.cumulativeEnergy += astep / (Math.PI * 2);
     this.orbit.energy += astep / (Math.PI * 2);
 
-    if (this.energy > MAX_WORM_ENERGY) {
-      this.dead = true;
-      this.energy = MAX_WORM_ENERGY;
-      return;
-    }
+    // if (this.energy > MAX_WORM_ENERGY) {
+    //   this.dead = true;
+    //   this.energy = MAX_WORM_ENERGY;
+    //   return;
+    // }
 
     if (this.cumulativeEnergy >= MAX_CUMULATIVE) {
       this.dead = true;
@@ -241,7 +245,7 @@ class Worm {
 
     this.pastOrbits.forEach( (pastOrbit, i) => {
       let r = dist(lp, pastOrbit);
-      let k = pastOrbit.energy * this.energy / MAX_ORBIT_ENERGY;
+      let k = pastOrbit.energy * this.petalEnergy / MAX_ORBIT_ENERGY;
       // let k = this.energy * 0.99
       let rr = r * k;
 
@@ -290,7 +294,7 @@ class Worm {
       let dda2 = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].angle : dda;
 
       let ddd = Math.abs(or - arcRad) / pastOrbit.size;
-      if (ddd > 0.05) {
+      if (ddd > 0.5) {
         this.lastOrbitTrail[i] = {
           r: arcRad,
           angle: dda
