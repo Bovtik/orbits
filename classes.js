@@ -76,6 +76,7 @@ class Circle {
 
     this.enablePetals = Math.random() < 0.57;
     this.enableBg = Math.random() < 0.45;
+    this.enableLines = Math.random() < 0.63;
   }
   draw(ctx) {
     // ctx.lineWidth = 0.01;
@@ -221,13 +222,14 @@ class Worm {
     ctx.stroke();
   }
   drawLine(ctx) {
-    if (this.orbit.enablePetals) return;
+    if (!this.orbit.enableLines) return;
 
     let lp = this.points[this.points.length - 1];
 
     ctx.lineWidth = 2 * this.energy;
     // ctx.lineWidth = 1;
-    let len = this.energy * 0.5;
+    let x = Math.PI * this.orbit.size * this.orbit.energy;
+    let len = (this.energy + 0.1) * 0.5 * (Math.sin(this.orbit.energy * x * 0.5) * Math.cos(0.35 * this.energy * x) + 1) / 1.1;
 
     let grad = ctx.createLinearGradient(lp.x, lp.y, this.orbit.x, this.orbit.y);
 
