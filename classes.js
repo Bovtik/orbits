@@ -73,6 +73,9 @@ class Circle {
 
     this.petalWidth = 5 + Math.random() * (MAX_PETAL_WIDTH - 5);
     // this.petalWidth = 70;
+
+    this.enablePetals = Math.random() < 0.57;
+    this.enableBg = Math.random() < 0.45;
   }
   draw(ctx) {
     // ctx.lineWidth = 0.01;
@@ -218,6 +221,8 @@ class Worm {
     ctx.stroke();
   }
   drawLine(ctx) {
+    if (this.orbit.enablePetals) return;
+
     let lp = this.points[this.points.length - 1];
 
     ctx.lineWidth = 2 * this.energy;
@@ -247,7 +252,9 @@ class Worm {
     let maxStep = 3;
     let lp = this.points[this.points.length - 1];
 
-    this.pastOrbits.forEach( (pastOrbit, i) => {
+    this.pastOrbits
+    .filter( pastOrbit => pastOrbit.enablePetals )
+    .forEach( (pastOrbit, i) => {
       let r = dist(lp, pastOrbit);
       let k = pastOrbit.energy * this.petalEnergy / MAX_ORBIT_ENERGY;
       // let k = this.energy * 0.99

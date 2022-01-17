@@ -191,15 +191,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let interval = setInterval(() => {
     let allDead = true;
-    circles.forEach(circle => circle.draw(ctx));
+    circles
+    .filter( circle => circle.enableBg )
+    .forEach(circle => circle.draw(ctx));
 
     worms.forEach(worm => {
       allDead = allDead && worm.dead;
+      worm.drawOrbitTrails(ctx);
       if (worm.dead) return;
       worm.step();
       worm.draw(ctx);
-      // worm.drawLine(ctx);
-      worm.drawOrbitTrails(ctx);
+      worm.drawLine(ctx);
       worm.drawTrails(ctx);
 
       let lp = worm.points[worm.points.length - 1];
