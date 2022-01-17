@@ -313,8 +313,8 @@ class Worm {
       ctx.moveTo(pastOrbit.x + Math.cos(dda - angleOffset) * arcRad, pastOrbit.y + Math.sin(dda - angleOffset) * arcRad);
       ctx.lineTo(pastOrbit.x + Math.cos(dda + angleOffset) * arcRad, pastOrbit.y + Math.sin(dda + angleOffset) * arcRad);
 
-      ctx.lineTo(pastOrbit.x + Math.cos(dda2 + oldOffset) * or, pastOrbit.y + Math.sin(dda2 + oldOffset) * or);
-      ctx.lineTo(pastOrbit.x + Math.cos(dda2 - oldOffset) * or, pastOrbit.y + Math.sin(dda2 - oldOffset) * or);
+      ctx.lineTo(pastOrbit.x + Math.cos(dda2 + oldOffset) * (or - 1), pastOrbit.y + Math.sin(dda2 + oldOffset) * (or - 1));
+      ctx.lineTo(pastOrbit.x + Math.cos(dda2 - oldOffset) * (or - 1), pastOrbit.y + Math.sin(dda2 - oldOffset) * (or - 1));
       
       ctx.closePath();
       // ctx.arc(pastOrbit.x, pastOrbit.y, or, dda, dda + 0.1)
