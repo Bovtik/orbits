@@ -70,6 +70,9 @@ class Circle {
 
     this.energy = 0;
     this.worm = null;
+
+    this.petalWidth = 5 + Math.random() * (MAX_PETAL_WIDTH - 5);
+    // this.petalWidth = 70;
   }
   draw(ctx) {
     // ctx.lineWidth = 0.01;
@@ -305,8 +308,8 @@ class Worm {
         return;
       }
 
-      // let astep = 2 * Math.asin(20 / (2 * pastOrbit.size));
-      let astep = this.orbit.energy * pastOrbit.size * 0.003;
+      let astep = 2 * Math.asin(pastOrbit.petalWidth / (2 * pastOrbit.size));
+      // let astep = this.orbit.energy * pastOrbit.size * 0.001;
       let angleWidth = astep * Math.sin(radK * Math.PI);
       let angleOffset = angleWidth / 2;
       let oldOffset = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].offset : angleOffset;
