@@ -75,7 +75,7 @@ class Circle {
     // this.petalWidth = 70;
 
     this.enablePetals = Math.random() < 0.57;
-    this.enableBg = Math.random() < 0.45;
+    this.enableBg = Math.random() < 0.77;
     this.enableLines = Math.random() < 0.63;
   }
   draw(ctx) {

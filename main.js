@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.width = canvas.offsetWidth;
   canvas.height = canvas.offsetHeight;
 
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  // ctx.fillStyle = '#000';
+  // ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
 
 
   //  Init
@@ -185,15 +186,17 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   
-
   //  Start
   circles.forEach(circle => circle.draw(ctx));
 
   let interval = setInterval(() => {
     let allDead = true;
+
+    ctx.globalCompositeOperation = 'destination-over'
     circles
-    .filter( circle => circle.enableBg )
-    .forEach(circle => circle.draw(ctx));
+      .filter( circle => circle.enableBg )
+      .forEach(circle => circle.draw(ctx));
+    ctx.globalCompositeOperation = 'source-over'
 
     worms.forEach(worm => {
       allDead = allDead && worm.dead;
@@ -201,7 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (worm.dead) return;
       worm.step();
       worm.draw(ctx);
+
+      ctx.globalCompositeOperation = 'destination-over'
       worm.drawLine(ctx);
+      ctx.globalCompositeOperation = 'source-over'
+
       worm.drawTrails(ctx);
 
       let lp = worm.points[worm.points.length - 1];
@@ -237,6 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // console.log(cum)
 
       clearInterval(interval);
+
+      ctx.globalCompositeOperation = 'destination-over'
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.globalCompositeOperation = 'source-over'
     }
   }, 1000 / FPS);
 
