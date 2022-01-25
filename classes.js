@@ -75,15 +75,23 @@ class Circle {
     // this.petalWidth = 70;
 
     this.enablePetals = Math.random() < 0.57;
+    
+
+    this.enableBg = Math.random() < 0.77;
+    this.enableLines = Math.random() < 0.63;
+    
+    if (CONFIG.bubbleGarden) {
+      this.enableLines = false;
+      this.enableBg = false;
+      this.enablePetals = true;
+    }
+
     if (this.enablePetals) {
       let typeRandom = Math.random();
       if (typeRandom < 0.33) {
         this.petalsWiggle = true;
       }
     }
-
-    this.enableBg = Math.random() < 0.77;
-    this.enableLines = Math.random() < 0.63;
   }
   draw(ctx) {
     // ctx.lineWidth = 0.01;

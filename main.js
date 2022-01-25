@@ -209,7 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
       worm.drawLine(ctx);
       ctx.globalCompositeOperation = 'source-over'
 
-      worm.drawTrails(ctx);
+      if (!CONFIG.bubbleGarden) {
+        worm.drawTrails(ctx);
+      }
 
       let lp = worm.points[worm.points.length - 1];
 
