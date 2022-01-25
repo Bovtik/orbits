@@ -75,6 +75,13 @@ class Circle {
     // this.petalWidth = 70;
 
     this.enablePetals = Math.random() < 0.57;
+    if (this.enablePetals) {
+      let typeRandom = Math.random();
+      if (typeRandom < 0.33) {
+        this.petalsWiggle = true;
+      }
+    }
+
     this.enableBg = Math.random() < 0.77;
     this.enableLines = Math.random() < 0.63;
   }
@@ -305,6 +312,16 @@ class Worm {
       
       
       let dda = Math.atan2(dd.y, dd.x);
+
+      if (pastOrbit.petalsWiggle) {
+        // let ddaOffset = Math.cos(pastOrbit.energy * Math.PI * pastOrbit.size / 12) * 0.2 * Math.log(pastOrbit.energy * 1);
+        let tSize = 25;
+        let ddaOffsetX = radK * Math.PI * 2 * (pastOrbit.size / tSize);
+        let ddaOffsetK = 0.22;
+        let ddaOffset = Math.cos(ddaOffsetX) * ddaOffsetK;
+        dda += ddaOffset;
+      }
+      
       // let dda = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].angle : Math.atan2(dd.y, dd.x);
       let dda2 = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].angle : dda;
 
