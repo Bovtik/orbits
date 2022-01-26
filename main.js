@@ -209,7 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
       worm.drawLine(ctx);
       ctx.globalCompositeOperation = 'source-over'
 
-      if (!CONFIG.bubbleGarden) {
+      if (
+        !CONFIG.bubbleGarden &&
+        !CONFIG.hyperOrbits) {
         worm.drawTrails(ctx);
       }
 

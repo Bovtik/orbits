@@ -85,6 +85,10 @@ class Circle {
       this.enableBg = false;
       this.enablePetals = true;
     }
+    if (CONFIG.hyperOrbits) {
+      this.enableBg = true;
+      this.enableLines = false;
+    }
 
     if (this.enablePetals) {
       let typeRandom = Math.random();
@@ -200,7 +204,7 @@ class Worm {
       return;
     }
 
-    if (this.orbit.energy >= MAX_ORBIT_ENERGY) {
+    if (!CONFIG.hyperOrbits && this.orbit.energy >= MAX_ORBIT_ENERGY) {
       this.dead = true;
       return;
     }
@@ -224,11 +228,15 @@ class Worm {
     this.points.push(newPoint)
   }
   draw(ctx) {
-    ctx.lineWidth = 3 * this.energy;
+    if (CONFIG.hyperOrbits) {
+      ctx.lineWidth = Math.min(3, 2 * this.energy);
+    } else {
+      ctx.lineWidth = 3 * this.energy;
+    }
     // ctx.lineWidth = 5;
     ctx.strokeStyle = this.color.toString();
     ctx.shadowColor = this.color.toString();
-    ctx.shadowBlur = 15;
+    ctx.shadowBlur = CONFIG.hyperOrbits ? 0 : 15;
     ctx.lineCap = 'round';
 
     ctx.beginPath();
