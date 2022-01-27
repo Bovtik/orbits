@@ -75,7 +75,8 @@ class Circle {
     // this.petalWidth = 70;
 
     this.enablePetals = Math.random() < 0.57;
-    
+    this.petalsRagged = false;
+
 
     this.enableBg = Math.random() < 0.77;
     this.enableLines = Math.random() < 0.63;
@@ -351,8 +352,20 @@ class Worm {
       }
 
       let astep = 2 * Math.asin(pastOrbit.petalWidth / (2 * pastOrbit.size));
-      // let astep = this.orbit.energy * pastOrbit.size * 0.001;
-      let angleWidth = astep * Math.sin(radK * Math.PI);
+      // let astep = this.orbit.energy * pastOrbit.size * 0.001
+      // let angleWidthOffset = Math.cos(x * this.color.r * 0.1) * Math.sin(x * this.color.b * 0.05) * pastOrbit.petalWidth / 100;
+
+      let angleWidthOffset = 0;
+      if (pastOrbit.petalsRagged) {
+        let x = radK * Math.PI * 1.35;
+        angleWidthOffset = Math.cos(x * 5) * Math.sin(x * 2.7) * 0.87 * Math.pow(-radK + 1, 0.1) * astep;
+      }
+      // let colK = Math.max(Math.max(pastOrbit.color.r, pastOrbit.color.g), pastOrbit.color.b) / 77;
+      // let colK = Math.max(Math.max(pastOrbit.color.r, pastOrbit.color.g), pastOrbit.color.b) / pastOrbit.size;
+      // let colK2 = Math.min(Math.min(pastOrbit.color.r, pastOrbit.color.g), pastOrbit.color.b) / 77;
+      // let colK2 = Math.max(Math.max(pastOrbit.color.r, pastOrbit.color.g), pastOrbit.color.b) / pastOrbit.size;
+      // let angleWidthOffset = Math.abs(Math.cos(x * colK2) * Math.sin((x % 0.5) * colK));
+      let angleWidth = astep * Math.sin(radK * Math.PI) + angleWidthOffset;
       let angleOffset = angleWidth / 2;
       let oldOffset = this.lastOrbitTrail[i] ? this.lastOrbitTrail[i].offset : angleOffset;
 
