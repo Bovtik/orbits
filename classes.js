@@ -95,6 +95,7 @@ class Circle {
       let typeRandom = Math.random();
       if (typeRandom < 0.33) {
         this.petalsWiggle = true;
+        this.tSize = Math.random();
       }
     }
   }
@@ -332,8 +333,10 @@ class Worm {
 
       if (pastOrbit.petalsWiggle) {
         // let ddaOffset = Math.cos(pastOrbit.energy * Math.PI * pastOrbit.size / 12) * 0.2 * Math.log(pastOrbit.energy * 1);
-        let tSize = 25;
-        let ddaOffsetX = radK * Math.PI * 2 * (pastOrbit.size / tSize);
+        // let tSize = 25;
+        let tSize = pastOrbit.tSize;
+        let ddaOffsetX = radK * Math.PI * 2 * (tSize * pastOrbit.size / 37);
+        // let ddaOffsetX = radK * Math.PI * 2 * 5;
         let ddaOffsetK = 0.22;
         let ddaOffset = Math.cos(ddaOffsetX) * ddaOffsetK;
         dda += ddaOffset;
