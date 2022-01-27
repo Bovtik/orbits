@@ -256,32 +256,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 1000 / FPS);
 
-  let tgl = false;
+  // let tgl = false;
 
-  canvas.addEventListener('click', e => {
-    // let ppp = pp();
+  // canvas.addEventListener('click', e => {
+  //   // let ppp = pp();
 
-    // if (!ppp) return;
+  //   // if (!ppp) return;
 
-    // let cc = new Circle({
-    //   x: ppp.x,
-    //   y: ppp.y,
-    //   size: 10
-    //   // size: ppp.d
-    // });
+  //   // let cc = new Circle({
+  //   //   x: ppp.x,
+  //   //   y: ppp.y,
+  //   //   size: 10
+  //   //   // size: ppp.d
+  //   // });
 
-    // circles.push(cc)
-    // cc.draw(ctx);
-    // console.log(worms);
+  //   // circles.push(cc)
+  //   // cc.draw(ctx);
+  //   // console.log(worms);
     
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+  //   ctx.fillStyle = '#000';
+  //   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    if (tgl) {
-      circles.forEach(circle => circle.draw(ctx));
-    }
+  //   if (tgl) {
+  //     circles.forEach(circle => circle.draw(ctx));
+  //   }
 
-    tgl = !tgl;
-  })
+  //   tgl = !tgl;
+  // })
 })
 
