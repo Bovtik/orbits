@@ -9,8 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let amount = Math.floor(95 * amountK) + 5;
   let circles = [];
 
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  // canvas.width = canvas.offsetWidth;
+  // canvas.height = canvas.offsetHeight;
+
+  canvas.width = 960;
+  canvas.height = 960;
 
   // ctx.fillStyle = '#000';
   // ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -282,6 +285,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //   tgl = !tgl;
   // })
+  function resizeHandler() {
+    canvas.style.width = 'auto';
+    canvas.style.height = 'auto';
+
+    let size = Math.min(canvas.offsetWidth, canvas.offsetHeight);
+
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+  }
+
+  resizeHandler();
+  window.addEventListener('resize', resizeHandler);
 
   function getOrbitPopulationFeat(pop) {
     if (pop < 0.15) {
