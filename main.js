@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let canvas = document.getElementById('main');
   let ctx = canvas.getContext('2d');
   // ctx.translate(0.5, 0.5);
-  let amount = Math.floor(95 * Math.random()) + 5;
+  let amountK = Math.random();
+  let amount = Math.floor(95 * amountK) + 5;
   let circles = [];
 
   canvas.width = canvas.offsetWidth;
@@ -283,5 +284,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //   tgl = !tgl;
   // })
+
+  function getOrbitPopulationFeat(pop) {
+    if (pop < 0.15) {
+      return "very low"
+    } else if (pop >= 0.15 && pop < 0.3) {
+      return "low"
+    } else if (pop >= 0.3 && pop < 0.6) {
+      return "medium"
+    } else if (pop >= 0.6 && pop < 0.9) {
+      return "high"
+    } else {
+      return "very high"
+    }
+  };
+
+  window.$fxhashFeatures = {
+    "orbit amount": getOrbitPopulationFeat(amountK),
+    "bubble garden": CONFIG.bubbleGarden,
+    "hyper orbits": CONFIG.hyperOrbits,
+  }
 })
 
