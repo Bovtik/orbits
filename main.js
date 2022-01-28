@@ -35,8 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // cc.draw(ctx);
   }
 
-  console.log(circles);
-
   circles.forEach( (circle, i, arr) => {
     let closest = arr.reduce( (accum, item) => {
       if (circle != item && dist(circle, item) - item.size < dist(circle, accum) - accum.size) {
@@ -243,12 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     if (allDead) {
-      console.log('FINISH')
       // let cum = worms.reduce( (accum, item) => accum += item.cumulativeEnergy, 0);
       // cum /= worms.length;
-      // console.log(cum)
 
       clearInterval(interval);
+
+      fxpreview();
 
       ctx.globalCompositeOperation = 'destination-over'
       ctx.fillStyle = '#000';
