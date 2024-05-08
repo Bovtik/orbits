@@ -1,10 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-  //  consts 
-  const margin = 20;
-
-  let canvas = document.getElementById('main');
-  let ctx = canvas.getContext('2d');
-  // ctx.translate(0.5, 0.5);
+const main = function main(canvas, ctx, margin) {
   let amountK = Math.random();
   let amount = Math.floor(95 * amountK) + 5;
   let circles = [];
@@ -38,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // cc.draw(ctx);
   }
 
-  circles.forEach( (circle, i, arr) => {
-    let closest = arr.reduce( (accum, item) => {
+  circles.forEach((circle, i, arr) => {
+    let closest = arr.reduce((accum, item) => {
       if (circle != item && dist(circle, item) - item.size < dist(circle, accum) - accum.size) {
         accum = item;
       }
@@ -56,13 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // circle.size = 10;
-    
+
 
     circle.closest = closest;
   })
 
   //  Need second and third pass to inflate small circles
-  circles.forEach( (circle, i, arr) => {
+  circles.forEach((circle, i, arr) => {
     let closest = arr.reduce((accum, item) => {
       if (circle != item && dist(circle, item) - item.size < dist(circle, accum) - accum.size) {
         accum = item;
@@ -115,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let worms = [];
 
-  circles.forEach( circle => {
+  circles.forEach(circle => {
     let clockwise = false;
     let r = circle.size + margin / 2;
     let k = 1;
@@ -164,10 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let cr = canvas.width / 2;
 
-  circles.forEach( circle => {
-    // if (dist(circle, center) < dist(centerCircle, center)) {
-    //   centerCircle = circle;
-    // }
+  circles.forEach(circle => {
     if (dist(circle, center) < cr) {
       centerCircle = circle;
 
@@ -187,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 
-  
+
   //  Start
   circles.forEach(circle => circle.draw(ctx));
 
@@ -196,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ctx.globalCompositeOperation = 'destination-over'
     circles
-      .filter( circle => circle.enableBg )
+      .filter(circle => circle.enableBg)
       .forEach(circle => circle.draw(ctx));
     ctx.globalCompositeOperation = 'source-over'
 
@@ -225,8 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       let variants = worm.orbit.neighbors;
-      
-      variants.forEach( variant => {
+
+      variants.forEach(variant => {
         if (worm.pastOrbits.includes(variant)) {
           return;
         }
@@ -236,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (Math.abs((dist(dv) + dist(dv2) - (worm.orbit.size + variant.size + margin))) < 0.1) {
-        // if (Math.abs(Math.atan2(dv.y, dv.x) + Math.atan2(dv2.y, dv2.x)) < 0.1) {
+          // if (Math.abs(Math.atan2(dv.y, dv.x) + Math.atan2(dv2.y, dv2.x)) < 0.1) {
           worm.setOrbit(variant);
           worm.clockwise = !worm.clockwise;
         }
@@ -249,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       clearInterval(interval);
 
-      fxpreview();
+      // fxpreview();
 
       ctx.globalCompositeOperation = 'destination-over'
       ctx.fillStyle = '#000';
@@ -258,33 +249,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 1000 / FPS);
 
-  // let tgl = false;
+  return interval
+}
 
-  // canvas.addEventListener('click', e => {
-  //   // let ppp = pp();
 
-  //   // if (!ppp) return;
+document.addEventListener('DOMContentLoaded', () => {
+  //  consts 
 
-  //   // let cc = new Circle({
-  //   //   x: ppp.x,
-  //   //   y: ppp.y,
-  //   //   size: 10
-  //   //   // size: ppp.d
-  //   // });
+  let canvas = document.getElementById('main');
+  let ctx = canvas.getContext('2d');
+  const margin = 20;
+  // ctx.translate(0.5, 0.5);
+  
+  let intervalId = main(canvas, ctx, margin)
 
-  //   // circles.push(cc)
-  //   // cc.draw(ctx);
-  //   // console.log(worms);
-    
-  //   ctx.fillStyle = '#000';
-  //   ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  //   if (tgl) {
-  //     circles.forEach(circle => circle.draw(ctx));
-  //   }
-
-  //   tgl = !tgl;
-  // })
   function resizeHandler() {
     canvas.style.width = 'auto';
     canvas.style.height = 'auto';
@@ -312,10 +290,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  window.$fxhashFeatures = {
-    "orbit amount": getOrbitPopulationFeat(amountK),
-    "bubble garden": CONFIG.bubbleGarden,
-    "hyper orbits": CONFIG.hyperOrbits,
-  }
+  document.body.addEventListener('mousemove', (e) => {
+    let hw = document.body.offsetWidth / 2;
+    let hh = document.body.offsetHeight / 2;
+
+    let maxShadowOffset = 8;
+
+    let kw = -1 * (e.screenX - hw) / hw;
+    let kh = -1 * (e.screenY - hh) / hh;
+
+    let xshad = (kw * maxShadowOffset);
+    let yshad = (kh * maxShadowOffset);
+
+    const sbg = new Color({
+      r: 0,
+      g: 0,
+      b: 0,
+      a: .65
+    })
+
+    canvas.style['box-shadow'] = `${xshad}px ${yshad}px 25px 0 ${sbg.toString()}`;
+  })
+
+  canvas.addEventListener('click', () => {
+    clearInterval(intervalId)
+    intervalId = main(canvas, ctx, margin)
+  })
+
+  // window.$fxhashFeatures = {
+  //   "orbit amount": getOrbitPopulationFeat(amountK),
+  //   "bubble garden": CONFIG.bubbleGarden,
+  //   "hyper orbits": CONFIG.hyperOrbits,
+  // }
 })
 
